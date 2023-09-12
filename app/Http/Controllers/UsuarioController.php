@@ -18,6 +18,7 @@ class UsuarioController extends Controller
 
     public function create(Request $request)
     {
+
         $nuevaPersona = new Persona();
         $nuevaPersona->save();
 
@@ -26,7 +27,10 @@ class UsuarioController extends Controller
         $nuevousuario->password = $request->password;
         $nuevousuario->persona_id = $nuevaPersona->id;
         $nuevousuario->save();
-        return "Soy Nuevo Usuario";
+        return response()->json([
+            'status' => true,
+            'message' => 'User Created Successfully',
+        ], 200);
     }
 
     public function show(Request $request)

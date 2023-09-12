@@ -14,17 +14,7 @@ class PersonaController extends Controller
     }
 
 
-    public function create(Request $request)
-    {
-        $nuevapersona = new Persona();
-        $nuevapersona->photo = $request->photo;
-        $nuevapersona->fullname = $request->fullname;
-        $nuevapersona->Bio = $request->Bio;
-        $nuevapersona->phone = $request->phone;
-        $nuevapersona->password = $request->password;
-        $nuevapersona->save();
-        return "Soy una Nueva Persona";
-    }
+
 
     public function show(Request $request)
     {
@@ -46,6 +36,9 @@ class PersonaController extends Controller
         $persona->phone = $request->phone;
 
         $persona->save();
-        return " Perfil Actualizado";
+        return response()->json([
+            'status' => true,
+            'message' => 'User Created Successfully',
+        ], 200);
     }
 }
