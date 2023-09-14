@@ -40,17 +40,19 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/auth/register', 'register');
     Route::post('/auth/login', 'login');
     Route::post('/auth/logout', 'logout');
-});
+})->middleware(['auth:sanctum']);
 
 Route::controller(AdminController::class)->group(function () {
     Route::get('/admin/listRoles', 'listRoles');
     Route::get('/admin/listPermissions', 'listPermissions');
     Route::get('/admin/listUsers', 'listUsers');
 
+
     Route::post('/admin/createRole', 'createRole');
+    Route::post('/admin/updateRoles/{id}', 'updateRoles');
     Route::post('/admin/createPermission', 'createPermission');
     Route::post('/admin/grantPermissionsToRole', 'grantPermissionsToRole');
     Route::post('/admin/revokePermissionToRole', 'revokePermissionToRole');
     Route::post('/admin/givePermissionToUser', 'givePermissionToUser');
-    Route::post('/admin/assignRoleToUser', 'assignRoleToUser');
-});
+    Route::post('/admin/assignRoleToUser/{user_id}', 'assignRoleToUser');
+})->middleware(['auth:sanctum']);

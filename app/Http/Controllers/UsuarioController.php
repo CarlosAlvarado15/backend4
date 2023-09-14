@@ -4,39 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Persona;
 use Illuminate\Http\Request;
-use App\Models\Usuario;
+use App\Models\User;
 
 class UsuarioController extends Controller
 {
     public function index()
     {
 
-        $usuario = Usuario::with('persona')->get();
+        $users = User::with('persona', 'roles')->get();
 
-        return $usuario;
+        return $users;
     }
 
-    public function create(Request $request)
-    {
 
-        $nuevaPersona = new Persona();
-        $nuevaPersona->save();
-
-        $nuevousuario = new Usuario();
-        $nuevousuario->email = $request->email;
-        $nuevousuario->password = $request->password;
-        $nuevousuario->persona_id = $nuevaPersona->id;
-        $nuevousuario->save();
-        return response()->json([
-            'status' => true,
-            'message' => 'User Created Successfully',
-        ], 200);
-    }
 
     public function show(Request $request)
     {
-        $usuario = usuario::find($request->id);
-        $usuario->persona;
-        return $usuario;
+        $user = User::find($request->id);
+        $user->persona;
+        return $user;
     }
 }

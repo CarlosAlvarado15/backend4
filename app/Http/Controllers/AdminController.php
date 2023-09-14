@@ -13,19 +13,7 @@ class AdminController extends Controller
     public function listRoles()
     {
 
-        $user = User::where('email', 'joregesosa@gmail.com')->first();
-        $roles = $user->getRoleNames();
-        $permissions = [];
-        foreach ($roles as  $role) {
-            $role = Role::findByName($role);
-            $permissionsList = $role->permissions->pluck('name');
-
-            foreach ($permissionsList as $permission) {
-                $permissions[] = $permission;
-            }
-        }
-
-        return  $permissions;
+        return  Role::select('id', 'name')->get();
     }
 
     public function listPermissions()
@@ -44,40 +32,65 @@ class AdminController extends Controller
     public function createRole(Request $request)
     {
         Role::create($request->all());
-        return "Role added successfully";
+        return response()->json([
+            'message' => 'Role added successfully'
+        ]);
+    }
+
+    public function updateRole(Request $request)
+    {
+        $role = Role::find($request->id);
+        $role->name = $request->name;
+
+        $role->save();
+        return response()->json([
+            'message' => 'Role updated successfully'
+        ]);
     }
 
     public function createPermission(Request $request)
     {
         Permission::create($request->all());
-        return "Permission added successfully";
+        return response()->json([
+            'message' => 'Permission added successfully'
+        ]);
     }
 
     public function grantPermissionsToRole(Request $request)
     {
         $role = Role::findById($request->role_id);
         $role->givePermissionTo($request->permissions);
-        return "Permission granted successfully";
+        return response()->json([
+            'message' => 'Permission granted successfully'
+        ]);
     }
 
     public function revokePermissionToRole(Request $request)
     {
         $role = Role::findById($request->role_id);
         $role->revokePermissionTo($request->permissions);
-        return "Permission revoked successfully";
+        return response()->json([
+            'message' => 'permission revoked successfully'
+        ]);
     }
 
-    public function givePermissionToUser(Request $request)
-    {
-        $user = User::find($request->user_id);
-        $user->givePermissionTo([$request->revoke, $request->add]);
-    }
+
+
 
     public function assignRoleToUser(Request $request)
     {
-
         $user = User::find($request->user_id);
         $user->assignRole($request->role);
-        return "Role asigned successfully";
+        return response()->json([
+            'message' => 'Role asigned successfully'
+        ]);
+    }
+    public function removeRoleToUser(Request $request)
+    {
+        $user = User::find($request->user_id);
+        $user->removeRole($request->role);
+        return response()->json([
+            'message' => 'Role revoked successfully'
+        ]);
     }
 }

@@ -82,6 +82,7 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
             $roles = $user->getRoleNames();
+            $persona = $user->persona;
             $permissions = [];
             foreach ($roles as  $role) {
                 $role = Role::findByName($role);
@@ -98,8 +99,8 @@ class AuthController extends Controller
                 'token' => $user->createToken("API TOKEN")->plainTextToken,
                 'data' => [
                     'id' => $user->id,
-                    'name' => $user->name,
                     'email' => $user->email,
+                    'persona' => $persona,
                     'roles' => $roles,
                     'permissions' =>  $permissions
                 ]
@@ -114,10 +115,13 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()->tokens->each(function ($token, $key) {
+            $token->delete();
+        });
 
-        return response()->json([
-            'message' => 'Logged out successfully'
-        ]);
+
+        Auth::guard('web')->logout();
+
+        return response()->json(['message' => 'Sesión cerrada con éxito'], 200);
     }
 }

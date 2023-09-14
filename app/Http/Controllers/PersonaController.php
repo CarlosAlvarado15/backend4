@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Persona;
+use App\Models\User;
 use App\Models\Usuario;
+use Spatie\Permission\Models\Role;
 
 class PersonaController extends Controller
 {
@@ -24,7 +26,7 @@ class PersonaController extends Controller
 
     public function update(Request $request)
     {
-        $usuario = Usuario::find($request->id);
+        $usuario = User::find($request->id);
         $usuario->email = $request->email;
         $usuario->password = $request->password;
 
@@ -36,9 +38,41 @@ class PersonaController extends Controller
         $persona->phone = $request->phone;
 
         $persona->save();
+        $user = User::where('id', $request->id)->first();
+        $roles = $user->getRoleNames();
+        $persona = $user->persona;
+        $permissions = [];
+        foreach ($roles as  $role) {
+            $role = Role::findByName($role);
+            $permissionsList = $role->permissions->pluck('name');
+
+            foreach ($permissionsList as $permission) {
+                $permissions[] = $permission;
+            }
+        }
         return response()->json([
             'status' => true,
-            'message' => 'User Created Successfully',
+            'message' => 'User Logged In Successfully',
+            'token' => $user->createToken("API TOKEN")->plainTextToken,
+            'data' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'persona' => $persona,
+                'roles' => $roles,
+                'permissions' =>  $permissions
+            ]
+        ], 200);
+        return response()->json([
+            'status' => true,
+            'message' => 'User updated  Successfully',
+
+            'data' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'persona' => $persona,
+                'roles' => $roles,
+                'permissions' =>  $permissions
+            ]
         ], 200);
     }
 }
